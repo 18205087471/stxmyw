@@ -1,0 +1,34 @@
+---  
+  - hosts: api1
+    remote_user: root
+    tasks: 
+      - name:  更新api-gateway
+        shell: killall java
+
+  - hosts: api1
+    remote_user: root
+    tasks:
+      - name:  查看进程
+        shell: jps;ps -ef|grep -v grep|grep java
+
+  - hosts: 10.0.18.165
+    remote_user: root
+    tasks:
+      - name:  同步jar包
+        shell: for i in {166..170};do rsync -aSH /usr/api-gateway.jar 10.0.18.$i:/usr/api-gateway.jar;done"
+
+  - hosts: api1
+    serial: 3
+    gather_facts: False
+    remote_user: root
+    tasks:
+      - name:  start api one
+        shell: for i in {back-center,api-gateway};do `nohup java -jar /usr/$i.jar >/dev/null 2>&1 &` sleep 1;done
+      - name:  start api two
+        shell: for i in {back-center,api-gateway};do `nohup java -jar /usr/$i.jar >/dev/null 2>&1 &` sleep 1;done
+
+  - hosts: api1
+    remote_user: root
+    tasks:
+      - name:  查看进程
+        shell: jps

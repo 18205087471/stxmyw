@@ -1,0 +1,14 @@
+--- 
+  - hosts: system
+    tasks: 
+     - name: 查询java进程PID
+       win_shell: tasklist|findstr "java"
+     - name: 杀死java程序
+       win_raw: taskkill /F /IM java.exe /T
+     - name: 重命名jar包
+       win_command: powershell.exe cd C:\fns ;mv file-node-system.jar file-node-system.jarbak
+     - name: 删除就jar包
+       win_file: 
+           path: C:\fns\file-node-system.jar320 
+           state: absent
+

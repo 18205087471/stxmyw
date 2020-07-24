@@ -1,0 +1,6 @@
+--- 
+  - hosts: mysql
+    remote_user: root
+    tasks: 
+      - name: remove mysql 7 days old tar backup
+        script: /root/rback.sh

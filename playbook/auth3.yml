@@ -1,0 +1,28 @@
+---  
+   - hosts: auth3
+     remote_user: root
+     tasks: 
+         - name: 更新243-244微服务
+           shell: killall java
+
+   - hosts: auth3
+     remote_user: root
+     tasks:
+       - name: 同步service
+         synchronise: 
+                 src: /usr/java-jar/
+                 dest: /usr/java-jar/
+                 archive: yes
+                 delete: yes
+
+   - hosts: auth3
+     remote_user: root
+     tasks:
+       - name: 启动service
+         shell: for i in {auth-server,file-center,log-center,statistics-center,supervise-center,system-center,user-center,work-center,queue-center};do `nohup java -jar /usr/java-jar/$i.jar >/dev/null 2>&1 &` sleep 1;done
+
+   - hosts: auth3
+     remote_user: root
+     tasks:
+       - name: 查看进程
+         shell: jps;ps -ef|grep -v grep|grep java

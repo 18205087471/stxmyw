@@ -1,0 +1,24 @@
+--- 
+  - hosts: back1
+    remote_user: root
+    tasks: 
+      - name: 杀死前端进程
+        shell: killall java
+
+  - hosts: 10.0.18.162
+    remote_user: root
+    tasks:
+      - name: 同步前端
+        shell: for i in {163..164};do rsync -aSH /usr/back-center.jar 10.0.18.$i:/usr/back-center.jar;done
+
+  - hosts: back1
+    remote_user: root
+    tasks:
+      - name: 启动back-center
+        shell: for i in {back-center,auth-server};do `nohup java -Xms6024m -Xmx6024m -jar /usr/$i.jar >/dev/null 2>&1 &` sleep 1;done
+
+  - hosts: back1
+    remote_user: root
+    tasks:
+      - name: 查看进程
+        shell: jps;ps -ef|grep -v grep|grep java

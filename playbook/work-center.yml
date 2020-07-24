@@ -1,0 +1,38 @@
+---  
+   - hosts: module
+     remote_user: root
+     any_errors_fatal: True
+     gather_facts: False
+     serial: 3
+
+     tasks: 
+       - name: 关闭3台work-center
+         shell: kill -15 `jps|grep -v grep|grep work-center|awk {print $1}`
+
+       - name: 同步3台work-center
+         synchronise: 
+                 src: /usr/java-jar/work-center.jar
+                 dest: /usr/java-jar/work-center.jar
+                 archive: yes
+
+       - name: 启动3台work-center
+         shell: `nohup java -jar /usr/java-jar/work-center.jar >/dev/null 2>&1 &`
+
+       - name: 查看进程
+         shell: jps;ps -ef|grep -v grep|grep work-center
+
+     tasks: 
+       - name: 关闭3台work-center
+         shell: kill -15 `jps|grep -v grep|grep work-center|awk {print $1}`
+
+       - name: 同步3台work-center
+         synchronise: 
+                 src: /usr/java-jar/work-center.jar
+                 dest: /usr/java-jar/work-center.jar
+                 archive: yes
+
+       - name: 启动3台work-center
+         shell: `nohup java -jar /usr/java-jar/work-center.jar >/dev/null 2>&1 &`
+
+       - name: 查看进程
+         shell: jps;ps -ef|grep -v grep|grep work-center

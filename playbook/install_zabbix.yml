@@ -1,0 +1,19 @@
+---
+  - hosts:  10.0.18.247
+    remote_user:  root
+    tasks:
+      - name:  install zabbix_agent
+        unarchive:
+          copy:  yes
+          src:  /root/zabbix-4.2.7.tar.gz
+          dest:  /root/
+      - name:  make install
+        shell:  cd zabbix-4.2.7/ && ./configure --prefix=/usr/zabbix --enable-agent
+        shell:  sed -i 's/^Server=127.0.0.1/#\ Server=127.0.0.1/' /usr/zabbix/etc/zabbix_agentd.conf
+        shell:	sed -i 's/.*StartAgents=3/StartAgents=0/' /usr/zabbix/etc/zabbix_agentd.conf
+        shell:	sed -i 's/.*ServerActive=127.0.0.1$/ServerActive=127.0.0.1,10.0.18.245/' /usr/zabbix/etc/zabbix_agentd.conf
+        shell:	sed -i 's/Hostname=Zabbix server/Hostname=/' /usr/zabbix/etc/zabbix_agentd.conf
+        shell:	sed -i 's/#.*EnableRemoteCommands=0/EnableRemoteCommands=1/' /usr/zabbix/etc/zabbix_agentd.conf
+        shell:	sed -i 's/#.*UnsafeUserParameters=0/UnsafeUserParameters=1/' /usr/zabbix/etc/zabbix_agentd.conf
+        shell:  echo PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/usr/zabbix/bin:/usr/zabbix/sbin" >> /etc/profile
+        

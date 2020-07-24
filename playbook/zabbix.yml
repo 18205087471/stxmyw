@@ -1,0 +1,6 @@
+--- 
+  - hosts: 10.0.18.247
+    remote_user: root
+    tasks:
+      - name: 安装zabbix-agent
+        shell: 

@@ -1,0 +1,8 @@
+--- 
+  - hosts: 10.0.18.160
+    tasks:
+     - name: register nginx service with curl check
+       consul:
+         service_name: nginx
+         service_port: 80
+         script: curl http://10.0.18.160

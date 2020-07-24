@@ -1,0 +1,6 @@
+--- 
+  - hosts: mysql
+    remote_user: root
+    tasks: 
+      - name: mysql Optimization suggestions
+        script: /root/tuning-primer.sh

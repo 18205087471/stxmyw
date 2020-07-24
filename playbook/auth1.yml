@@ -1,0 +1,32 @@
+---  
+   - hosts: auth1
+     remote_user: root
+     tasks: 
+         - name: 更新177-179微服务
+           shell: killall java
+
+   - hosts: auth1
+     remote_user: root
+     tasks:
+       - name: 同步service
+         synchronise: 
+                 src: /usr/java-jar/
+                 dest: /usr/java-jar/
+                 archive: yes
+                 delete: yes
+                 #rsync_opts: 
+                   #- "--no-motd"
+                   #- "--exclude=.git"
+
+   - hosts: auth1
+     any_errors_fatal: True
+     remote_user: root
+     tasks:
+       - name: 启动service
+         shell: for i in {auth-server,file-center,log-center,statistics-center,supervise-center,system-center,user-center,work-center,queue-center};do `nohup java -Xms3024m -Xmx3024m -jar /usr/java-jar/$i.jar >/dev/null 2>&1 &` sleep 1;done
+
+   - hosts: auth1
+     remote_user: root
+     tasks:
+       - name: 查看进程
+         shell: jps;ps -ef|grep -v grep|grep java

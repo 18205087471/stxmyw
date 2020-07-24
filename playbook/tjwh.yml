@@ -1,0 +1,62 @@
+--- 
+   - hosts: 10.0.18.160
+     remote_user: root
+     tasks: 
+       - name: restart service chronyd
+         service: 
+            name: chronyd
+            state: restarted
+
+   - hosts: centos
+     remote_user: root
+     tasks:
+       - name: restart service chronyd
+         service: 
+            name: chronyd
+            state: restarted
+
+   - hosts: 10.0.18.160
+     remote_user: root
+     tasks: 
+       - name: stop service nginx
+         service: 
+            name: nginx
+            state: stopped
+
+   - hosts: 10.0.18.190
+     remote_user: root
+     tasks: 
+       - name: remove mysql data
+         shell: rm -rf /var/lib/mysql/*
+
+   - hosts: 10.0.18.184
+     remote_user: root
+     tasks: 
+       - name: remove mysql data
+         shell: /usr/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --password=Great@1qaz2wsx --use-memory=4G ygst1_0713
+
+   - hosts: 10.0.18.190
+     remote_user: root
+     tasks: 
+       - name: sync ygst1 backup
+         synchronize: 
+             src: ygst1_0713
+             dest: /root/
+
+   - hosts: 10.0.18.190
+     remote_user: root
+     tasks: 
+       - name: apply log ygst1
+         shell: /usr/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --use-memory=4G --apply-log ygst1_0713
+
+   - hosts: 10.0.18.190
+     remote_user: root
+     tasks: 
+       - name: copy back ygst1
+         shell: /usr/bin/innobackupex --defaults-file=/etc/my.cnf --user=root --password=Great@1qaz2wsx --use-memory=4G --copy-back ygst1_0713
+
+   - hosts: 10.0.18.190
+     remote_user: root
+     tasks: 
+       - name: remove mysql data
+         shell: chown -R mysql.mysql /var/lib/mysql
